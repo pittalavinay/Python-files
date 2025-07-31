@@ -1,0 +1,203 @@
+Model	  Type	          Good For	                      Why It Fails Here
+KNN	Supervised	Small, structured datasets	Struggles with spread-out, high-dimensional data
+SVR	Supervised	Small, non-linear datasets	Needs tuning, underperforms by default
+K-Means	Unsupervised	Clustering, grouping data	Not for prediction tasks
+Linear Regression	Supervised	Predicting continuous output	Simple, interpretable, and best fit for this data
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+What does "High-dimensional data" mean?
+Imagine you're finding the nearest grocery shop in your area.
+
+You check distance on a map — that’s easy with 2 things: Latitude and Longitude (like X and Y on a map).
+
+But now, let’s say you also include Depth — a third thing, like how deep under the ground the earthquake happened.
+
+More features = more dimensions = harder to measure “closeness”.
+
+🧠 Why distance becomes less meaningful in high dimensions?
+In low dimensions (like just Latitude and Longitude), finding nearest neighbors is simple — you just look at the map.
+
+But as you add more features (dimensions), all the points start to look far away from each other, even if they are not.
+
+This makes it harder for KNN to find truly "close" neighbors.
+
+
+📦 Example:
+Let’s say two earthquakes happened:
+
+
+Latitude	Longitude	Depth
+10.0	70.0	5
+10.2	70.1	300
+On the map, they look very close.
+
+But KNN will say, “Wait! The Depth is so different! So they are far apart.”
+➡️ So it gets confused and gives a bad prediction.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Where You Can Use Each Model
+1️⃣ KNN Regressor (K-Nearest Neighbors – Regression)
+📌 Best Used For:
+
+Small datasets
+
+Clean and well-structured numerical data
+
+Situations where "similar inputs → similar outputs"
+
+🧠 Examples:
+
+Predicting house price based on nearby houses (area, rooms, etc.)
+
+Estimating temperature based on nearby weather stations
+
+Predicting movie ratings based on users with similar taste
+
+🚫 Avoid if:
+
+Data is large, spread out, or has different scales
+
+Real-time speed is needed (KNN is slow at prediction time)
+
+2️⃣ SVR (Support Vector Regression)
+📌 Best Used For:
+
+Small to medium datasets
+
+Problems where relationships are not purely linear
+
+Where accuracy matters more than speed
+
+🧠 Examples:
+
+Predicting stock prices (with feature tuning)
+
+Forecasting electricity consumption
+
+Modeling non-linear patterns (with kernel like RBF)
+
+🚫 Avoid if:
+
+Dataset is large (slow training)
+
+You can’t spend time on tuning parameters
+
+3️⃣ K-Means Clustering (Unsupervised)
+📌 Best Used For:
+
+Grouping similar data points
+
+Finding patterns or segments in unlabeled data
+
+Preprocessing step before classification
+
+🧠 Examples:
+
+Customer segmentation in marketing (grouping buyers by habits)
+
+Grouping earthquake zones based on Latitude and Depth
+
+Grouping similar images, text documents, etc.
+
+🚫 Avoid if:
+
+You need to predict a target value
+
+Data has complex shapes or overlapping clusters
+
+✅ Quick Comparison Table
+
+Model	Type	Good For	Example Use Case
+KNN Regressor	Supervised	Predicting based on closest known data	House price, temperature prediction
+SVR	Supervised	Predicting complex non-linear relationships	Stock price, power usage
+K-Means	Unsupervised	Grouping/clustering unlabeled data	Customer segmentation, location-based clustering
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+✅ Mean Squared Error (MSE)
+📌 What it is:
+MSE tells us how far off our predictions are — on average.
+
+📌 How it works:
+It takes the difference between the actual and predicted values, squares them, and finds the average.
+
+📌 In simple words:
+
+“On average, how wrong is our model — and how big are the errors?”
+
+📌 Example:
+If MSE = 2.0 → On average, your predictions are about √2 ≈ 1.4 units away from the real value.
+
+📌 Goal:
+Lower MSE is better. We want our model’s errors to be small.
+
+✅ R-squared (R²)
+📌 What it is:
+R² tells us how well our model explains the data.
+
+📌 In simple words:
+
+“How much of the actual result can the model predict correctly using the input features?”
+
+📌 Example:
+If R² = 0.80 → Your model explains 80% of the result correctly.
+If R² = 0 → Model is no better than guessing the average.
+If R² = 1 → Model is perfect.
+
+📌 Goal:
+Higher R² is better. We want it close to 1.0.
+
+🎯 Quick Summary:
+
+Metric	Meaning	Simple Explanation	Goal
+MSE	Average of squared errors	"How wrong are the predictions?"	Lower = Better
+R²	% of variance explained	"How much does the model understand the target?"	Higher = Better
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Code for Classification
+
+
+models = {
+    "Logistic Regression": LogisticRegression(max_iter=1000),
+    "Decision Tree": DecisionTreeClassifier(),
+    "Random Forest": RandomForestClassifier(),
+    "Gradient Boosting": GradientBoostingClassifier()
+}
+
+
+
+for name, model in models.items():
+    model.fit(X_train_scaled, y_train)
+    preds = model.predict(X_test_scaled)
+    acc = accuracy_score(y_test, preds)
+    print(f"\n{name} Accuracy: {acc:.4f}")
+    print(classification_report(y_test, preds, target_names=le.classes_))
+
+
+
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+
+rf = RandomForestClassifier()
+rf.fit(X_train_scaled, y_train)
+y_pred_rf = rf.predict(X_test_scaled)
+
+cm = confusion_matrix(y_test, y_pred_rf)
+plt.figure(figsize=(8,6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=le.classes_, yticklabels=le.classes_)
+plt.title("Random Forest - Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+
+

@@ -1,0 +1,169 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.classifier import StandardScaler
+from sklearn.neighbor import KNeighborClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+df = pd.read_cvs("")
+df.head()
+x = df.drop('alert_level', axis=1)
+y = df['alert_level']
+
+x_train,x_test,y_train,y_test = train_test_split(x, y, test_size = 0.2, randomstate = 42, stratify = y)
+
+scaler = StandardScaler()
+x_train_scaled = scaler.fit_transform(x_train)
+x_test_scaled = scaler.transform(x_test)
+
+knn = KNeighborsClassifier(n_neighbors = 5)
+knn.fit(x_train_scaled, y_train)
+
+y_pred = knn.predict(x_test_scaled)
+
+print("Accuracy", accuracy_score(y_test, y_prec))
+print("\n Classification Report:\n", Classification_report(y_test, y_pred))
+
+error_rates = []
+for k in range(1, 21):
+    knn_k = KNeighborsClassifier(n_neighbors=k)
+    knn_k.fit(X_train_scaled, y_train)
+    pred_k = knn_k.predict(X_test_scaled)
+    error_rates.append(np.mean(pred_k != y_test))
+
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, 21), error_rates, marker='o', linestyle='--', color='blue')
+plt.title('Elbow Method For Optimal K')
+plt.xlabel('K Value')
+plt.ylabel('Error Rate')
+plt.grid(True)
+plt.show()
+
+
+error_score = []
+
+for k in range(1,21):
+    knn_k = KNeighborsClassifier(n_neighbors = k)
+    knn_k.fit(x_train_scaled, y_train)
+    y_pred = knn_k.predict(x_test_scaled)
+    error_score.append(np.mean(y_pred != y_test))
+
+for i in error_score:
+    print(i, end = ' ')
+
+
+plt.plot(range(1,21), error_score, marker = 'o', color = 'blue') 
+plt.title('Elbow Method For Optimal K')
+plt.xlabel('K Value')
+plt.ylabel('Error Rate')
+plt.grid(True)
+plt.show()
+
+
+
+
+
+# Importing necessary libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.cluster import KMeans
+
+# To show plots inside Jupyter notebook (if using it)
+%matplotlib inline
+
+# Step 1: Load the dataset
+df = pd.read_csv('income.csv')
+print(df.head())  # Show the first few rows
+
+# Step 2: Plot the original data
+plt.scatter(df['Age'], df['Income($)'])
+plt.xlabel('Age')
+plt.ylabel('Income ($)')
+plt.title('Original Age vs Income data')
+plt.show()
+
+# Step 3: Apply KMeans (before scaling)
+kmeans = KMeans(n_clusters=3)
+y_pred = kmeans.fit_predict(df[['Age', 'Income($)']])
+df['Cluster'] = y_pred
+
+# Step 4: Plot clusters (without scaling)
+# Split data into 3 clusters
+cluster0 = df[df['Cluster'] == 0]
+cluster1 = df[df['Cluster'] == 1]
+cluster2 = df[df['Cluster'] == 2]
+
+# Plotting
+plt.scatter(cluster0['Age'], cluster0['Income($)'], color='green', label='Cluster 0')
+plt.scatter(cluster1['Age'], cluster1['Income($)'], color='red', label='Cluster 1')
+plt.scatter(cluster2['Age'], cluster2['Income($)'], color='blue', label='Cluster 2')
+plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], color='purple', marker='*', label='Centroids')
+plt.xlabel('Age')
+plt.ylabel('Income ($)')
+plt.legend()
+plt.title('Clusters before Scaling')
+plt.show()
+
+# Step 5: Feature Scaling using MinMaxScaler
+scaler = MinMaxScaler()
+
+# Scale Income column
+df['Income($)'] = scaler.fit_transform(df[['Income($)']])
+
+# Scale Age column
+df['Age'] = scaler.fit_transform(df[['Age']])
+
+# Step 6: Plot the scaled data
+plt.scatter(df['Age'], df['Income($)'])
+plt.xlabel('Age (Scaled)')
+plt.ylabel('Income ($) (Scaled)')
+plt.title('Scaled Age vs Income')
+plt.show()
+
+# Step 7: Apply KMeans again on scaled data
+kmeans_scaled = KMeans(n_clusters=3)
+y_pred_scaled = kmeans_scaled.fit_predict(df[['Age', 'Income($)']])
+df['Cluster'] = y_pred_scaled
+
+# Step 8: Plot clusters after scaling
+cluster0 = df[df['Cluster'] == 0]
+cluster1 = df[df['Cluster'] == 1]
+cluster2 = df[df['Cluster'] == 2]
+
+plt.scatter(cluster0['Age'], cluster0['Income($)'], color='green', label='Cluster 0')
+plt.scatter(cluster1['Age'], cluster1['Income($)'], color='red', label='Cluster 1')
+plt.scatter(cluster2['Age'], cluster2['Income($)'], color='blue', label='Cluster 2')
+plt.scatter(kmeans_scaled.cluster_centers_[:, 0], kmeans_scaled.cluster_centers_[:, 1], color='purple', marker='*', label='Centroids')
+plt.xlabel('Age (Scaled)')
+plt.ylabel('Income ($) (Scaled)')
+plt.legend()
+plt.title('Clusters after Scaling')
+plt.show()
+
+# Step 9: Elbow Method to find the best number of clusters (K)
+sse = []
+k_values = range(1, 10)  # Try K from 1 to 9
+
+for k in k_values:
+    kmeans = KMeans(n_clusters=k)
+    kmeans.fit(df[['Age', 'Income($)']])
+    sse.append(kmeans.inertia_)  # Inertia = SSE
+
+# Step 10: Plot Elbow Curve
+plt.plot(k_values, sse, marker='o')
+plt.xlabel('Number of Clusters (K)')
+plt.ylabel('SSE (Sum of Squared Errors)')
+plt.title('Elbow Method For Optimal K')
+plt.show()
